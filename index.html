@@ -1,0 +1,57 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Composio Tool Dependencies</title>
+  <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <style type="text/css">
+    body { font-family: sans-serif; margin: 0; padding: 0; }
+    h1 { text-align: center; }
+    #mynetwork {
+      width: 100vw;
+      height: 90vh;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+<h1>Composio Tool Dependency Graph</h1>
+<div id="mynetwork"></div>
+<script type="text/javascript">
+  const dependencies = {"edges":[{"source":"GOOGLESUPER_ACL_GET","target":"GOOGLESUPER_ACL_DELETE","parameter":"rule_id","reason":"Get the rule ID before deleting it"},{"source":"GOOGLESUPER_ACL_LIST","target":"GOOGLESUPER_ACL_PATCH","parameter":"rule_id","reason":"Get the rule ID from the list before updating it"},{"source":"GOOGLESUPER_ACL_LIST","target":"GOOGLESUPER_ACL_UPDATE","parameter":"rule_id","reason":"Get the rule ID from the list before updating it"},{"source":"GOOGLESUPER_EVENTS_GET","target":"GOOGLESUPER_EVENTS_MOVE","parameter":"event_id","reason":"Get the event ID before moving it to another calendar"},{"source":"GOOGLESUPER_EVENTS_LIST","target":"GOOGLESUPER_EVENTS_DELETE","parameter":"event_id","reason":"Get the event ID from the list before deleting it"},{"source":"GOOGLESUPER_CREATE_LABEL","target":"GOOGLESUPER_ADD_LABEL_TO_EMAIL","parameter":"label_id","reason":"Use the created label ID to add it to emails"},{"source":"GOOGLESUPER_CREATE_TASK_LIST","target":"GOOGLESUPER_INSERT_TASK","parameter":"tasklist_id","reason":"Use the created task list ID to add tasks to it"},{"source":"GOOGLESUPER_CREATE_TASK_LIST","target":"GOOGLESUPER_DELETE_TASK","parameter":"tasklist_id","reason":"Use the created task list ID to delete tasks from it"},{"source":"GOOGLESUPER_CREATE_TASK_LIST","target":"GOOGLESUPER_DELETE_TASK_LIST","parameter":"tasklist_id","reason":"Use the created task list ID to delete the whole list"},{"source":"GOOGLESUPER_CREATE_FILE","target":"GOOGLESUPER_CREATE_PERMISSION","parameter":"file_id","reason":"Use the created file ID to set permissions on it"},{"source":"GOOGLESUPER_CREATE_FILE","target":"GOOGLESUPER_CREATE_COMMENT","parameter":"file_id","reason":"Use the created file ID to add comments to it"},{"source":"GOOGLESUPER_CREATE_FOLDER","target":"GOOGLESUPER_CREATE_FILE","parameter":"parent_id","reason":"Use the created folder ID as the parent for new files"},{"source":"GITHUB_LIST_THREADS","target":"GITHUB_REPLY_TO_THREAD","parameter":"thread_id","reason":"The REPLY_TO_THREAD tool needs the thread_id, which is produced by the LIST_THREADS tool."}]};
+  
+  const nodes = new vis.DataSet();
+  const edges = new vis.DataSet();
+
+  const nodeSet = new Set();
+  dependencies.edges.forEach(e => {
+    if(!nodeSet.has(e.source)) { 
+      nodeSet.add(e.source); 
+      nodes.add({ id: e.source, label: e.source, shape: 'box', color: '#97C2FC' }); 
+    }
+    if(!nodeSet.has(e.target)) { 
+      nodeSet.add(e.target); 
+      nodes.add({ id: e.target, label: e.target, shape: 'box', color: '#FFA807' }); 
+    }
+    edges.add({
+      from: e.source,
+      to: e.target,
+      label: e.parameter,
+      arrows: 'to',
+      title: e.reason
+    });
+  });
+
+  const container = document.getElementById('mynetwork');
+  const data = { nodes, edges };
+  const options = { 
+    physics: { 
+      enabled: true,
+      barnesHut: { gravitationalConstant: -2000, centralGravity: 0.3, springLength: 150 }
+    },
+    edges: { smooth: true, font: { align: 'middle' } }
+  };
+  const network = new vis.Network(container, data, options);
+</script>
+</body>
+</html>
